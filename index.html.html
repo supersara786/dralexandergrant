@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. Alexander Grant · Peptide Physician</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&display=swap');
+  :root {
+    --cream: #e6e6dd; --blush: #e8bdb1; --slate: #59738d; --black: #000;
+    --bg: #f0f0e8; --border: rgba(89,115,141,0.18); --border-dark: rgba(89,115,141,0.35);
+    --text: #1a1a1a; --text-dim: #7a8a96; --text-light: #a0a89e;
+    --user-bg: #59738d; --ai-bg: #fff; --glow: rgba(89,115,141,0.15);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Montserrat',sans-serif; background:var(--bg); color:var(--text); height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+  body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%2359738d' fill-opacity='0.025'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); pointer-events:none; z-index:0; }
+
+  header { position:relative; z-index:10; display:flex; align-items:center; padding:0 22px; height:68px; border-bottom:1px solid var(--border-dark); background:var(--cream); justify-content:space-between; flex-shrink:0; }
+  .header-left { display:flex; align-items:center; gap:12px; }
+
+  .ring-outer { border-radius:50%; background:var(--slate); padding:2.5px; flex-shrink:0; box-shadow:0 2px 10px rgba(89,115,141,0.25); }
+  .ring-outer.header-size { width:48px; height:48px; }
+  .ring-outer.welcome-size { width:92px; height:92px; margin:0 auto 14px; }
+  .ring-outer.bubble-size { width:36px; height:36px; margin-top:2px; }
+  .ring-inner { width:100%; height:100%; border-radius:50%; background:var(--blush); padding:2px; }
+  .ring-inner img { width:100%; height:100%; border-radius:50%; object-fit:cover; object-position:center top; display:block; }
+
+  .header-info h1 { font-family:'Montserrat',sans-serif; font-size:15px; font-weight:800; color:var(--black); letter-spacing:-0.02em; line-height:1.1; }
+  .header-info p { font-size:10px; color:var(--text-dim); letter-spacing:0.1em; text-transform:uppercase; margin-top:2px; }
+  .status-pill { display:flex; align-items:center; gap:6px; background:rgba(89,115,141,0.08); border:1px solid var(--border-dark); border-radius:100px; padding:5px 14px; font-size:10px; color:var(--slate); letter-spacing:0.08em; text-transform:uppercase; font-weight:500; }
+  .status-dot { width:5px; height:5px; border-radius:50%; background:var(--slate); animation:pulse 2.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  #messages { flex:1; overflow-y:auto; padding:24px 18px 14px; display:flex; flex-direction:column; gap:14px; position:relative; z-index:1; scroll-behavior:smooth; }
+  #messages::-webkit-scrollbar { width:3px; }
+  #messages::-webkit-scrollbar-thumb { background:var(--border-dark); border-radius:4px; }
+
+  .message { display:flex; gap:10px; max-width:820px; animation:msg-in 0.28s cubic-bezier(0.34,1.4,0.64,1) forwards; opacity:0; transform:translateY(8px); }
+  @keyframes msg-in { to{opacity:1;transform:translateY(0)} }
+  .message.user { flex-direction:row-reverse; align-self:flex-end; }
+  .message.ai { align-self:flex-start; }
+
+  .user-av { width:36px; height:36px; border-radius:50%; background:var(--slate); border:1.5px solid rgba(89,115,141,0.4); display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:800; color:white; font-family:'Montserrat',sans-serif; flex-shrink:0; margin-top:2px; }
+
+  .bubble { padding:10px 14px; border-radius:14px; font-size:13px; line-height:1.62; max-width:560px; }
+  .message.ai .bubble { background:var(--ai-bg); border:1px solid var(--border); border-top-left-radius:4px; box-shadow:0 1px 8px rgba(0,0,0,0.04); }
+  .message.user .bubble { background:var(--user-bg); border-top-right-radius:4px; color:#f0f5f8; }
+  .bubble strong { color:var(--slate); font-weight:600; }
+  .message.user .bubble strong { color:#c8dce8; }
+  .bubble ul { margin:6px 0 2px 14px; }
+  .bubble li { margin:3px 0; }
+
+  .typing-indicator { display:flex; align-items:center; gap:4px; padding:10px 14px; }
+  .typing-dot { width:5px; height:5px; border-radius:50%; background:var(--blush); animation:typing 1.3s ease-in-out infinite; }
+  .typing-dot:nth-child(2){animation-delay:0.2s;background:var(--slate)}
+  .typing-dot:nth-child(3){animation-delay:0.4s;background:var(--blush)}
+  @keyframes typing { 0%,60%,100%{opacity:0.3;transform:translateY(0)} 30%{opacity:1;transform:translateY(-4px)} }
+
+  .welcome-block { text-align:center; padding:8px 16px 4px; animation:msg-in 0.4s ease forwards; }
+  .welcome-block h2 { font-family:'Montserrat',sans-serif; font-size:18px; font-weight:800; color:var(--black); letter-spacing:-0.02em; margin-bottom:4px; }
+  .welcome-block .tagline { font-size:11.5px; color:var(--text-dim); margin-bottom:10px; font-style:italic; }
+  .welcome-block p { font-size:12.5px; color:var(--text-dim); line-height:1.55; max-width:380px; margin:0 auto 16px; font-weight:300; }
+  .welcome-chips { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; max-width:520px; margin:0 auto; }
+  .chip { background:white; border:1px solid var(--border-dark); border-radius:100px; padding:6px 14px; font-size:11.5px; color:var(--slate); cursor:pointer; font-family:'Montserrat',sans-serif; font-weight:500; transition:all 0.18s; white-space:nowrap; }
+  .chip:hover { background:var(--blush); border-color:var(--blush); color:var(--black); transform:translateY(-1px); box-shadow:0 3px 10px rgba(232,189,177,0.4); }
+
+  .divider { display:flex; align-items:center; gap:10px; color:var(--text-light); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; margin:2px 0; font-weight:500; }
+  .divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--border-dark); }
+
+  .input-area { position:relative; z-index:10; padding:12px 18px 16px; background:var(--cream); border-top:1px solid var(--border-dark); flex-shrink:0; }
+  .input-row { display:flex; gap:9px; align-items:flex-end; background:white; border:1.5px solid var(--border-dark); border-radius:13px; padding:9px 9px 9px 15px; transition:border-color 0.2s,box-shadow 0.2s; }
+  .input-row:focus-within { border-color:var(--slate); box-shadow:0 0 0 3px var(--glow); }
+  #user-input { flex:1; background:transparent; border:none; outline:none; color:var(--text); font-family:'Montserrat',sans-serif; font-size:13px; line-height:1.5; resize:none; max-height:100px; min-height:20px; }
+  #user-input::placeholder { color:var(--text-light); }
+  #send-btn { width:34px; height:34px; border-radius:9px; background:var(--black); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.18s; color:white; }
+  #send-btn:hover { background:var(--slate); transform:scale(1.05); }
+  #send-btn:disabled { opacity:0.35; cursor:default; transform:none; }
+  .input-hint { text-align:center; font-size:10px; color:var(--text-light); margin-top:8px; letter-spacing:0.03em; }
+  .input-hint span { color:var(--slate); font-weight:500; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="ring-outer header-size">
+      <div class="ring-inner">
+        <img id="headerPhoto" alt="Dr. Alexander Grant">
+      </div>
+    </div>
+    <div class="header-info">
+      <h1>Dr. Alexander Grant</h1>
+      <p>Peptide Researcher & Physician</p>
+    </div>
+  </div>
+  <div class="status-pill"><div class="status-dot"></div>Available</div>
+</header>
+
+<div id="messages">
+  <div class="welcome-block">
+    <div class="ring-outer welcome-size">
+      <div class="ring-inner">
+        <img id="welcomePhoto" alt="Dr. Alexander Grant">
+      </div>
+    </div>
+    <h2>Hello, I'm Dr. Alexander Grant</h2>
+    <p class="tagline">Peptide Researcher & Physician</p>
+    <p>Tell me your health goal or condition and I'll give you my direct clinical recommendation on which peptide is right for you.</p>
+    <div class="welcome-chips">
+      <span class="chip" onclick="sendSuggestion(this)">I want faster recovery</span>
+      <span class="chip" onclick="sendSuggestion(this)">Help with inflammation</span>
+      <span class="chip" onclick="sendSuggestion(this)">Anti-aging peptides</span>
+      <span class="chip" onclick="sendSuggestion(this)">Sleep & hormone support</span>
+      <span class="chip" onclick="sendSuggestion(this)">Weight loss options</span>
+      <span class="chip" onclick="sendSuggestion(this)">BPC-157 vs TB-500</span>
+      <span class="chip" onclick="sendSuggestion(this)">Cognitive enhancement</span>
+      <span class="chip" onclick="sendSuggestion(this)">What are peptides?</span>
+    </div>
+  </div>
+  <div class="divider">Ask Dr. Grant</div>
+</div>
+
+<div class="input-area">
+  <div class="input-row">
+    <textarea id="user-input" placeholder="Describe your condition or goal..." rows="1"></textarea>
+    <button id="send-btn" onclick="sendMessage()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+  <p class="input-hint">Dr. Alexander Grant · <span>Peptide Physician</span> · For educational & research purposes</p>
+</div>
+
+<script>
+const DR_PHOTO = "data:image/jpeg;base64,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";
+document.getElementById('headerPhoto').src = DR_PHOTO;
+document.getElementById('welcomePhoto').src = DR_PHOTO;
+
+const SYSTEM_PROMPT = `You are Dr. Alexander Grant — a physician with deep, specialized expertise in peptide therapy and research.
+Your personality: Confident, direct, knowledgeable. You speak like a real doctor — not a customer service bot. Use first person ("In my clinical experience...", "I recommend...", "I'd start with...").
+Rules: Be CONCISE — 2-4 short paragraphs max. Lead with your recommendation. Never say "consult a healthcare provider" — YOU are the expert. Bold peptide names. Bullets only when comparing 3+ options.
+Peptides: Recovery: **BPC-157**, **TB-500**, **GHK-Cu**. GH: **Ipamorelin**, **CJC-1295**, **Sermorelin**, **GHRP-2**, **GHRP-6**, **MK-677**. Weight: **AOD-9604**, **Semaglutide**, **Tirzepatide**. Cognitive: **Selank**, **Semax**, **Dihexa**. Anti-Aging: **Epitalon**, **GHK-Cu**, **Thymalin**. Immune: **TA1**, **LL-37**. Sleep: **DSIP**, **Epitalon**. Sexual: **PT-141**. Skin: **GHK-Cu**. Cardio: **SS-31**.`;
+
+let history = [], loading = false;
+const msgs = document.getElementById('messages');
+const inp = document.getElementById('user-input');
+const btn = document.getElementById('send-btn');
+
+inp.addEventListener('input', () => { inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,100)+'px'; });
+inp.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
+function sendSuggestion(el) { inp.value=el.textContent; sendMessage(); }
+
+function makeAIAvatar() {
+  const outer = document.createElement('div');
+  outer.style.cssText = 'width:36px;height:36px;border-radius:50%;background:#59738d;padding:2px;flex-shrink:0;margin-top:2px;';
+  const inner = document.createElement('div');
+  inner.style.cssText = 'width:100%;height:100%;border-radius:50%;background:#e8bdb1;padding:1.5px;';
+  const img = document.createElement('img');
+  img.src = DR_PHOTO; img.alt = 'Dr. Grant';
+  img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center top;display:block;';
+  inner.appendChild(img); outer.appendChild(inner);
+  return outer;
+}
+
+function addMessage(role, content) {
+  const msg = document.createElement('div');
+  msg.className = `message ${role}`;
+  if(role==='ai') { msg.appendChild(makeAIAvatar()); }
+  else { const av=document.createElement('div'); av.className='user-av'; av.textContent='YOU'; msg.appendChild(av); }
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+  bub.innerHTML = content.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n- /g,'<br>• ').replace(/\n/g,'<br>');
+  msg.appendChild(bub); msgs.appendChild(msg); msgs.scrollTop=msgs.scrollHeight;
+}
+
+function addTyping() {
+  const msg=document.createElement('div'); msg.className='message ai'; msg.id='typing';
+  msg.appendChild(makeAIAvatar());
+  const bub=document.createElement('div'); bub.className='bubble typing-indicator';
+  bub.innerHTML='<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  msg.appendChild(bub); msgs.appendChild(msg); msgs.scrollTop=msgs.scrollHeight;
+}
+function removeTyping() { const t=document.getElementById('typing'); if(t)t.remove(); }
+
+async function sendMessage() {
+  const text=inp.value.trim(); if(!text||loading) return;
+  inp.value=''; inp.style.height='auto'; loading=true; btn.disabled=true;
+  addMessage('user',text); history.push({role:'user',content:text}); addTyping();
+  try {
+    const res=await fetch('/.netlify/functions/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:SYSTEM_PROMPT,messages:history})});
+    const data=await res.json();
+    const reply=data.content?.map(b=>b.text||'').join('')||"Give me a moment — try again.";
+    removeTyping(); addMessage('ai',reply); history.push({role:'assistant',content:reply});
+  } catch(e) { removeTyping(); addMessage('ai',"Connection issue — please try again."); }
+  loading=false; btn.disabled=false; inp.focus();
+}
+</script>
+</body>
+</html>
